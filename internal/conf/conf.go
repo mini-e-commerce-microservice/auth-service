@@ -27,11 +27,11 @@ func Init() {
 		viper.AddConfigPath(dir)
 		err := viper.ReadInConfig()
 		if err == nil {
-			viper.SetConfigName("env.override")
-			err = viper.MergeInConfig()
-			if err != nil {
-				panic(err)
-			}
+			//viper.SetConfigName("env.override")
+			//err = viper.MergeInConfig()
+			//if err != nil {
+			//	panic(err)
+			//}
 			if err = viper.Unmarshal(&conf); err != nil {
 				panic(err)
 			}

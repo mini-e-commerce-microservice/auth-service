@@ -3,6 +3,7 @@ package infra
 import (
 	"context"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
 	"github.com/rs/zerolog/log"
 	"time"

@@ -13,9 +13,12 @@ type Config struct {
 }
 
 type ConfigKafka struct {
-	Username string `mapstructure:"USERNAME"`
-	Password string `mapstructure:"PASSWORD"`
-	Url      string `mapstructure:"URL"`
+	Host  string           `mapstructure:"HOST"`
+	Topic ConfigKafkaTopic `mapstructure:"TOPIC"`
+}
+
+type ConfigKafkaTopic struct {
+	CDCUserTable string `mapstructure:"TOPIC_CDC_USER_TABLE"`
 }
 
 type ConfigOpenTelemetry struct {
