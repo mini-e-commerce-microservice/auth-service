@@ -14,7 +14,7 @@ func TestGenerateToken(t *testing.T) {
 	mySigningKey := []byte("AllYourBase")
 
 	claims := AuthAccessTokenClaims{
-		Claims: &jwt_claims_proto.JwtAuthAccessTokenClaims{
+		JwtAuthAccessTokenClaims: &jwt_claims_proto.JwtAuthAccessTokenClaims{
 			UserId:     rand.Int63(),
 			Email:      faker.Email(),
 			RegisterAs: 1,
@@ -36,7 +36,7 @@ func TestGenerateToken(t *testing.T) {
 }
 
 func TestValidateToken(t *testing.T) {
-	tokenStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbXMiOnsidXNlcl9pZCI6ODQ4MjYwMDkzMDM5NDc1NTkyNywiZW1haWwiOiJaanN2bm12QFpBdXVCaXguYml6IiwicmVnaXN0ZXJfYXMiOjF9LCJpc3MiOiJ0ZXN0Iiwic3ViIjoic29tZWJvZHkiLCJhdWQiOlsic29tZWJvZHlfZWxzZSJdLCJleHAiOjE3Mjg0MDQyMzksIm5iZiI6MTcyODMxNzgzOSwiaWF0IjoxNzI4MzE3ODM5LCJqdGkiOiIxIn0.GP44njB54jFL2dUN3vbcqaZ0B1m3ihosOaePvaRKBWE"
+	tokenStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0NTIxNjE3ODkyNTcyMTQ3Njg0LCJlbWFpbCI6InBJWkl3ZmFASmdvY0htQi5uZXQiLCJyZWdpc3Rlcl9hcyI6MSwiaXNzIjoidGVzdCIsInN1YiI6InNvbWVib2R5IiwiYXVkIjpbInNvbWVib2R5X2Vsc2UiXSwiZXhwIjoxNzI4NDA0NjU3LCJuYmYiOjE3MjgzMTgyNTcsImlhdCI6MTcyODMxODI1NywianRpIjoiMSJ9.03QvgCaK_DAsbRslIZxilQJrdhggUyxptabFjpGDskk"
 
 	type claimsToken AuthAccessTokenClaims
 
@@ -46,7 +46,7 @@ func TestValidateToken(t *testing.T) {
 	if err != nil {
 		panic(err)
 	} else if claims, ok := token.Claims.(*claimsToken); ok {
-		fmt.Println(claims.Claims, claims.RegisteredClaims.Issuer)
+		fmt.Println(claims.UserId, claims.RegisteredClaims.Issuer)
 	} else {
 		panic("unknown claims type, cannot proceed")
 	}

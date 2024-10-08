@@ -20,6 +20,7 @@ message JwtAuthRefreshTokenClaims {
   int64 user_id = 1;
   string email = 2;
   int64 register_as = 3;
+  string uid = 4;
 }
 
 

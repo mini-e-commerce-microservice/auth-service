@@ -10,6 +10,7 @@ type Config struct {
 	DatabaseDSN   string              `mapstructure:"DATABASE_DSN"`
 	Kafka         ConfigKafka         `mapstructure:"KAFKA"`
 	Jwt           ConfigJWT           `mapstructure:"JWT"`
+	Redis         ConfigRedis         `mapstructure:"REDIS"`
 }
 
 type ConfigKafka struct {
@@ -50,4 +51,10 @@ type ConfigJWTRefreshToken struct {
 	Key                 string        `mapstructure:"KEY"`
 	ExpiredAt           time.Duration `mapstructure:"EXPIRED_AT"`
 	RememberMeExpiredAt time.Duration `mapstructure:"REMEMBER_ME_EXPIRED_AT"`
+}
+
+type ConfigRedis struct {
+	ClientName string `mapstructure:"CLIENT_NAME"`
+	Host       string `mapstructure:"HOST"`
+	Password   string `mapstructure:"PASSWORD"`
 }

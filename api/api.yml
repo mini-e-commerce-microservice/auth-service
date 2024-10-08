@@ -5,3 +5,165 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3002
+paths:
+  /v1/login:
+    post:
+      operationId: V1LoginPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1LoginPostRequestBody'
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1LoginPostResponseBody'
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/generate-access-token:
+    get:
+      operationId: V1GenerateAccessTokenPost
+      description: make sure in you can have refresh token in cookies
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GenerateAccessTokenPostResponseBody'
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/logout:
+    post:
+      operationId: V1LogoutPost
+      description: make sure in you can have refresh token in cookies
+      responses:
+        204:
+          description: NO CONTENT LOGOUT SUCCESSFULLY
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    V1GenerateAccessTokenPostResponseBody:
+      type: object
+      properties:
+        access_token:
+          $ref: '#/components/schemas/V1AuthTokenResponse'
+      required:
+        - access_token
+    V1LoginPostResponseBody:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: user id
+        email:
+          type: string
+        is_email_verified:
+          type: boolean
+        access_token:
+          $ref: '#/components/schemas/V1AuthTokenResponse'
+      required:
+        - id
+        - email
+        - is_email_verified
+        - access_token
+    V1LoginPostRequestBody:
+      type: object
+      properties:
+        email:
+         type: string
+         x-oapi-codegen-extra-tags:
+           validate: "required,email"
+        password:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required"
+        remember_me:
+          type: boolean
+      required:
+        - email
+        - password
+        - remember_me
+    V1AuthTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        expired_at:
+          type: string
+          format: date-time
+          description: format time rfc3339 utc
+      required:
+        - token
+        - expired_at
+    Error400:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+        - errors
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message

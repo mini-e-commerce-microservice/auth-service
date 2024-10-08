@@ -6,6 +6,7 @@ func main() {
 	var rootCmd = &cobra.Command{}
 
 	rootCmd.AddCommand(consumerUserService)
+	rootCmd.AddCommand(restApi)
 	err := rootCmd.Execute()
 	if err != nil {
 		panic(err)
