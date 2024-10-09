@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/mini-e-commerce-microservice/auth-service/generated/proto/jwt_claims_proto"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/conf"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 	"time"
 )
@@ -14,11 +13,9 @@ type AuthAccessTokenClaims struct {
 	jwt.RegisteredClaims
 }
 
-func (a *AuthAccessTokenClaims) GenerateHS256() (tokenStr string, err error) {
-	accessTokenConf := conf.GetConfig().Jwt.AccessToken
-
+func (a *AuthAccessTokenClaims) GenerateHS256(key string, expiredAt int64) (tokenStr string, err error) {
 	timeNow := time.Now().UTC()
-	timeExp := timeNow.Add(accessTokenConf.ExpiredAt)
+	timeExp := timeNow.Add(time.Minute * time.Duration(expiredAt))
 	a.RegisteredClaims = jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(timeExp),
 		IssuedAt:  jwt.NewNumericDate(timeNow),
@@ -28,21 +25,19 @@ func (a *AuthAccessTokenClaims) GenerateHS256() (tokenStr string, err error) {
 
 	tokenParse := jwt.NewWithClaims(jwt.SigningMethodHS256, a)
 
-	tokenStr, err = tokenParse.SignedString([]byte(accessTokenConf.Key))
+	tokenStr, err = tokenParse.SignedString([]byte(key))
 	if err != nil {
 		return tokenStr, tracer.Error(err)
 	}
 	return
 }
 
-func (a *AuthAccessTokenClaims) ClaimsHS256(tokenStr string) (err error) {
-	accessTokenConf := conf.GetConfig().Jwt.AccessToken
-
+func (a *AuthAccessTokenClaims) ClaimsHS256(tokenStr string, key string) (err error) {
 	tokenParse, err := jwt.ParseWithClaims(tokenStr, a, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(accessTokenConf.Key), nil
+		return []byte(key), nil
 	})
 	if err != nil {
 		return tracer.Error(err)

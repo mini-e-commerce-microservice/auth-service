@@ -15,7 +15,7 @@ import (
 // list return error: ErrInvalidToken, ErrRefreshTokenNotExistsInRedis
 func (s *service) GenerateAccessToken(ctx context.Context, input GenerateAccessTokenInput) (output GenerateAccessTokenOutput, err error) {
 	refreshTokenClaims := jwt_util.AuthRefreshTokenClaims{}
-	err = refreshTokenClaims.ClaimsHS256(input.RefreshToken)
+	err = refreshTokenClaims.ClaimsHS256(input.RefreshToken, s.jwtConf.RefreshToken.Key)
 	if err != nil {
 		err = errors.Join(err, ErrInvalidToken)
 		return output, tracer.Error(err)
@@ -40,7 +40,7 @@ func (s *service) GenerateAccessToken(ctx context.Context, input GenerateAccessT
 			RegisterAs: refreshTokenClaims.RegisterAs,
 		},
 	}
-	accessToken, err := accessTokenClaim.GenerateHS256()
+	accessToken, err := accessTokenClaim.GenerateHS256(s.jwtConf.AccessToken.Key, s.jwtConf.AccessToken.ExpiredAt)
 	if err != nil {
 		return output, tracer.Error(err)
 	}

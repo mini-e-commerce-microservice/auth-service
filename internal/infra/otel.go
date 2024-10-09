@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/auth-service/generated/proto/secret_proto"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel"
@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func NewOtel(cred conf.ConfigOpenTelemetry) primitive.CloseFn {
+func NewOtel(cred *secret_proto.Otel, tracerName string) primitive.CloseFn {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -35,7 +35,7 @@ func NewOtel(cred conf.ConfigOpenTelemetry) primitive.CloseFn {
 		panic(err)
 	}
 
-	traceProvider, closeFn, err := startOtelProvider(traceExp, cred)
+	traceProvider, closeFn, err := startOtelProvider(traceExp, tracerName)
 	if err != nil {
 		panic(err)
 	}
@@ -47,13 +47,13 @@ func NewOtel(cred conf.ConfigOpenTelemetry) primitive.CloseFn {
 	return closeFn
 }
 
-func startOtelProvider(exp trace.SpanExporter, cred conf.ConfigOpenTelemetry) (*trace.TracerProvider, primitive.CloseFn, error) {
+func startOtelProvider(exp trace.SpanExporter, tracerName string) (*trace.TracerProvider, primitive.CloseFn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
-			semconv.ServiceNameKey.String(cred.TracerName),
+			semconv.ServiceNameKey.String(tracerName),
 		),
 		resource.WithHost(),
 		resource.WithTelemetrySDK(),

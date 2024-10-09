@@ -22,24 +22,26 @@ var restApi = &cobra.Command{
 	Use:   "rest-api",
 	Short: "REST API",
 	Run: func(cmd *cobra.Command, args []string) {
-		conf.Init()
-		config := conf.GetConfig()
+		appConf := conf.LoadAppConf()
+		otelConf := conf.LoadOtelConf()
+		redisConf := conf.LoadRedisConf()
+		jwtConf := conf.LoadJwtConf()
 
-		redisClient, redisClose := infra.NewRedisWithOtel(config.Redis)
-		otelClose := infra.NewOtel(config.OpenTelemetry)
-		postgreClient, postgreClose := infra.NewPostgresql(config.DatabaseDSN)
+		redisClient, redisClose := infra.NewRedisWithOtel(redisConf, appConf.ClientRedisName)
+		otelClose := infra.NewOtel(otelConf, appConf.TracerName)
+		postgreClient, postgreClose := infra.NewPostgresql(appConf.DatabaseDSN)
 		rdbms := wsqlx.NewRdbms(postgreClient, wsqlx.WithAttributes(
 			semconv.DBSystemPostgreSQL,
 		))
 
-		tokenRepository := token.NewRepository(redisClient)
+		tokenRepository := token.NewRepository(redisClient, redisConf)
 		usersRepository := users.NewRepository(rdbms)
 
-		authService := auth.NewService(tokenRepository, usersRepository)
+		authService := auth.NewService(tokenRepository, usersRepository, jwtConf)
 
 		server := presenter.New(&presenter.Presenter{
 			AuthService: authService,
-			Port:        config.AppPort,
+			Port:        appConf.AppPort,
 		})
 
 		ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

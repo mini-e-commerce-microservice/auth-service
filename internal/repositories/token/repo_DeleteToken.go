@@ -8,7 +8,7 @@ import (
 )
 
 func (r *repository) DeleteToken(ctx context.Context, input DeleteTokenInput) (err error) {
-	key := fmt.Sprintf("%s%s-%s", primitive.PrefixCacheRedis, input.TokenType, input.TokenUID)
+	key := fmt.Sprintf("%s%s-%s", r.redisConf.TrackingPrefix, input.TokenType, input.TokenUID)
 
 	cmd := r.client.B().Del().Key(key).Build()
 

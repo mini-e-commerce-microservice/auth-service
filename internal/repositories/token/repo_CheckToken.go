@@ -15,7 +15,7 @@ func (r *repository) CheckToken(ctx context.Context, input CheckTokenInput) (exi
 		input.TimeToLiveCache = 24 * time.Hour
 	}
 
-	key := fmt.Sprintf("%s%s-%s", primitive.PrefixCacheRedis, input.TokenType, input.TokenUID)
+	key := fmt.Sprintf("%s%s-%s", r.redisConf.TrackingPrefix, input.TokenType, input.TokenUID)
 
 	cmd := r.client.B().Get().Key(key).Cache()
 	cache := r.client.DoCache(ctx, cmd, input.TimeToLiveCache)

@@ -23,7 +23,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 		Config: kafka.ReaderConfig{
 			Brokers: []string{c.kafkaConf.Host},
 			GroupID: "user-service-consumer-user-data-group1",
-			Topic:   c.kafkaConf.Topic.CDCUserTable,
+			Topic:   c.kafkaConf.Topic.CdcUserTable,
 		},
 	})
 	if err != nil {

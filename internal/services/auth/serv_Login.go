@@ -41,7 +41,7 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 			RegisterAs: int64(userOutput.Data.RegisterAs),
 		},
 	}
-	accessToken, err := accessTokenClaim.GenerateHS256()
+	accessToken, err := accessTokenClaim.GenerateHS256(s.jwtConf.AccessToken.Key, s.jwtConf.AccessToken.ExpiredAt)
 	if err != nil {
 		return output, tracer.Error(err)
 	}
@@ -54,7 +54,12 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 			Uid:        uuid.New().String(),
 		},
 	}
-	refreshToken, err := refreshTokenClaim.GenerateHS256(input.RememberMe)
+	expiredAt := s.jwtConf.RefreshToken.ExpiredAt
+	if input.RememberMe {
+		expiredAt = s.jwtConf.RefreshToken.RememberMeExpiredAt
+	}
+
+	refreshToken, err := refreshTokenClaim.GenerateHS256(s.jwtConf.RefreshToken.Key, expiredAt)
 	if err != nil {
 		return output, tracer.Error(err)
 	}
@@ -77,7 +82,7 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 	if err != nil {
 		return output, tracer.Error(err)
 	}
-	
+
 	output = LoginOutput{
 		AccessToken: LoginOutputToken{
 			Token:     accessToken,

@@ -18,16 +18,18 @@ var consumerUserService = &cobra.Command{
 	Use:   "consumerUserService",
 	Short: "consumerUserService",
 	Run: func(cmd *cobra.Command, args []string) {
-		conf.Init()
+		kafkaConf := conf.LoadKafkaConf()
+		appConf := conf.LoadAppConf()
+		otelConf := conf.LoadOtelConf()
 
-		db, closeFnPostgre := infra.NewPostgresql(conf.GetConfig().DatabaseDSN)
-		closeFnOtel := infra.NewOtel(conf.GetConfig().OpenTelemetry)
+		db, closeFnPostgre := infra.NewPostgresql(appConf.DatabaseDSN)
+		closeFnOtel := infra.NewOtel(otelConf, appConf.TracerName)
 		rdbms := wsqlx.NewRdbms(db)
 		kafkaBroker := ekafka.New(ekafka.WithOtel())
 
 		userRepository := users.NewRepository(rdbms)
 
-		cdcService := cdc.New(kafkaBroker, conf.GetConfig().Kafka, userRepository, rdbms)
+		cdcService := cdc.New(kafkaBroker, kafkaConf, userRepository, rdbms)
 
 		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 		defer stop()

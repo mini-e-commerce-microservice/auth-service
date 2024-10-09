@@ -9,7 +9,7 @@ import (
 )
 
 func (r *repository) InsertToken(ctx context.Context, input InsertTokenInput) (err error) {
-	key := fmt.Sprintf("%s%s-%s", primitive.PrefixCacheRedis, input.TokenType, input.TokenUID)
+	key := fmt.Sprintf("%s%s-%s", r.redisConf.TrackingPrefix, input.TokenType, input.TokenUID)
 
 	cmd := r.client.B().Set().Key(key).Value(input.Token).Exat(input.ExpiredAt).Build()
 

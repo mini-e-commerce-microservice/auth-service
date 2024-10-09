@@ -13,7 +13,7 @@ import (
 // list return error: ErrInvalidToken
 func (s *service) Logout(ctx context.Context, input LogoutInput) (err error) {
 	refreshTokenClaims := jwt_util.AuthRefreshTokenClaims{}
-	err = refreshTokenClaims.ClaimsHS256(input.RefreshToken)
+	err = refreshTokenClaims.ClaimsHS256(input.RefreshToken, s.jwtConf.RefreshToken.Key)
 	if err != nil {
 		err = errors.Join(err, ErrInvalidToken)
 		return tracer.Error(err)
