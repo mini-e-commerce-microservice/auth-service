@@ -3,15 +3,16 @@ package auth
 import (
 	"context"
 	"errors"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/google/uuid"
 	"github.com/guregu/null/v5"
 	"github.com/mini-e-commerce-microservice/auth-service/generated/proto/jwt_claims_proto"
+	"github.com/mini-e-commerce-microservice/auth-service/internal/model"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/token"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/users"
 	jwt_util "github.com/mini-e-commerce-microservice/auth-service/internal/util/jwt"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -24,34 +25,33 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 	})
 	if err != nil {
 		if !errors.Is(err, repositories.ErrRecordNotFound) {
-			return output, tracer.Error(err)
+			return output, collection.Err(err)
 		}
-		return output, tracer.Error(ErrInvalidEmail)
+		return output, collection.Err(ErrInvalidEmail)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(userOutput.Data.Password), []byte(input.Password))
 	if err != nil {
-		return output, tracer.Error(ErrInvalidPassword)
+		return output, collection.Err(ErrInvalidPassword)
 	}
 
 	accessTokenClaim := jwt_util.AuthAccessTokenClaims{
 		JwtAuthAccessTokenClaims: &jwt_claims_proto.JwtAuthAccessTokenClaims{
-			UserId:     userOutput.Data.ID,
-			Email:      userOutput.Data.Email,
-			RegisterAs: int64(userOutput.Data.RegisterAs),
+			UserId:          userOutput.Data.ID,
+			Email:           userOutput.Data.Email,
+			RegisterAs:      int64(userOutput.Data.RegisterAs),
+			IsEmailVerified: userOutput.Data.IsEmailVerified,
 		},
 	}
 	accessToken, err := accessTokenClaim.GenerateHS256(s.jwtConf.AccessToken.Key, s.jwtConf.AccessToken.ExpiredAt)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	refreshTokenClaim := jwt_util.AuthRefreshTokenClaims{
 		JwtAuthRefreshTokenClaims: &jwt_claims_proto.JwtAuthRefreshTokenClaims{
-			UserId:     userOutput.Data.ID,
-			Email:      userOutput.Data.Email,
-			RegisterAs: int64(userOutput.Data.RegisterAs),
-			Uid:        uuid.New().String(),
+			Uid:    uuid.New().String(),
+			UserId: userOutput.Data.ID,
 		},
 	}
 	expiredAt := s.jwtConf.RefreshToken.ExpiredAt
@@ -61,26 +61,30 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 
 	refreshToken, err := refreshTokenClaim.GenerateHS256(s.jwtConf.RefreshToken.Key, expiredAt)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	err = s.tokenRepository.InsertToken(ctx, token.InsertTokenInput{
 		TokenType: primitive.EnumTokenTypeRT,
-		Token:     refreshToken,
 		TokenUID:  refreshTokenClaim.Uid,
 		ExpiredAt: refreshTokenClaim.ExpiresAt.UTC(),
+		Value: model.TokenCache{
+			Email:           userOutput.Data.Email,
+			IsEmailVerified: userOutput.Data.IsEmailVerified,
+			RegisterAs:      userOutput.Data.RegisterAs,
+		},
 	})
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
-	_, err = s.tokenRepository.CheckToken(ctx, token.CheckTokenInput{
+	_, err = s.tokenRepository.GetToken(ctx, token.GetTokenInput{
 		TokenType:       primitive.EnumTokenTypeRT,
 		TokenUID:        refreshTokenClaim.Uid,
 		TimeToLiveCache: 48 * time.Hour,
 	})
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	output = LoginOutput{

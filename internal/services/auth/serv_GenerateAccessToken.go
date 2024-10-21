@@ -3,11 +3,16 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
+	"github.com/guregu/null/v5"
 	"github.com/mini-e-commerce-microservice/auth-service/generated/proto/jwt_claims_proto"
+	"github.com/mini-e-commerce-microservice/auth-service/internal/model"
+	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/token"
+	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/users"
 	jwt_util "github.com/mini-e-commerce-microservice/auth-service/internal/util/jwt"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 	"time"
 )
 
@@ -18,31 +23,58 @@ func (s *service) GenerateAccessToken(ctx context.Context, input GenerateAccessT
 	err = refreshTokenClaims.ClaimsHS256(input.RefreshToken, s.jwtConf.RefreshToken.Key)
 	if err != nil {
 		err = errors.Join(err, ErrInvalidToken)
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
-	refreshTokenExists, err := s.tokenRepository.CheckToken(ctx, token.CheckTokenInput{
+	if input.UpdateUserDataInCache {
+		userOutput, err := s.userRepository.FindOneUser(ctx, users.FindOneUserInput{
+			ID: null.IntFrom(refreshTokenClaims.UserId),
+		})
+		if err != nil {
+			if errors.Is(err, repositories.ErrRecordNotFound) {
+				err = fmt.Errorf("user not found in database, %w", ErrInvalidToken)
+			}
+			return output, collection.Err(err)
+		}
+
+		err = s.tokenRepository.InsertToken(ctx, token.InsertTokenInput{
+			TokenType: primitive.EnumTokenTypeRT,
+			TokenUID:  refreshTokenClaims.Uid,
+			ExpiredAt: refreshTokenClaims.ExpiresAt.UTC(),
+			Value: model.TokenCache{
+				Email:           userOutput.Data.Email,
+				IsEmailVerified: userOutput.Data.IsEmailVerified,
+				RegisterAs:      userOutput.Data.RegisterAs,
+			},
+		})
+		if err != nil {
+			return output, collection.Err(err)
+		}
+	}
+
+	refreshTokenData, err := s.tokenRepository.GetToken(ctx, token.GetTokenInput{
 		TokenType:       primitive.EnumTokenTypeRT,
 		TokenUID:        refreshTokenClaims.Uid,
 		TimeToLiveCache: 48 * time.Hour,
 	})
 	if err != nil {
-		return output, tracer.Error(err)
-	}
-	if !refreshTokenExists {
-		return output, tracer.Error(ErrRefreshTokenNotExistsInRedis)
+		if errors.Is(err, repositories.ErrRecordNotFound) {
+			err = ErrRefreshTokenNotExistsInRedis
+		}
+		return output, collection.Err(err)
 	}
 
 	accessTokenClaim := jwt_util.AuthAccessTokenClaims{
 		JwtAuthAccessTokenClaims: &jwt_claims_proto.JwtAuthAccessTokenClaims{
-			UserId:     refreshTokenClaims.UserId,
-			Email:      refreshTokenClaims.Email,
-			RegisterAs: refreshTokenClaims.RegisterAs,
+			UserId:          refreshTokenClaims.UserId,
+			Email:           refreshTokenData.Data.Email,
+			RegisterAs:      int64(refreshTokenData.Data.RegisterAs),
+			IsEmailVerified: refreshTokenData.Data.IsEmailVerified,
 		},
 	}
 	accessToken, err := accessTokenClaim.GenerateHS256(s.jwtConf.AccessToken.Key, s.jwtConf.AccessToken.ExpiredAt)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	output = GenerateAccessTokenOutput{
@@ -53,7 +85,8 @@ func (s *service) GenerateAccessToken(ctx context.Context, input GenerateAccessT
 }
 
 type GenerateAccessTokenInput struct {
-	RefreshToken string
+	RefreshToken          string
+	UpdateUserDataInCache bool
 }
 
 type GenerateAccessTokenOutput struct {

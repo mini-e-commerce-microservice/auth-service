@@ -6,6 +6,7 @@ import (
 	"github.com/mini-e-commerce-microservice/auth-service/internal/services/auth"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
 	"net/http"
+	"strconv"
 )
 
 func (h *handler) V1GenerateAccessTokenPost(w http.ResponseWriter, r *http.Request) {
@@ -15,8 +16,18 @@ func (h *handler) V1GenerateAccessTokenPost(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	updateUserDataStr := r.URL.Query().Get("update_user_data")
+	updateUserData := false
+	if updateUserDataStr != "" {
+		updateUserData, err = strconv.ParseBool(updateUserDataStr)
+		if err != nil {
+			h.httpOtel.Err(w, r, http.StatusBadRequest, err, "invalid query param update_user_data")
+			return
+		}
+	}
 	accessTokenOutput, err := h.authService.GenerateAccessToken(r.Context(), auth.GenerateAccessTokenInput{
-		RefreshToken: cookie.Value,
+		RefreshToken:          cookie.Value,
+		UpdateUserDataInCache: updateUserData,
 	})
 	if err != nil {
 		if errors.Is(err, auth.ErrInvalidToken) || errors.Is(err, auth.ErrRefreshTokenNotExistsInRedis) {

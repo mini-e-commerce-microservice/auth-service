@@ -6,10 +6,10 @@ import (
 	"errors"
 	"github.com/SyaibanAhmadRamadhan/event-bus/debezium"
 	ekafka "github.com/SyaibanAhmadRamadhan/event-bus/kafka"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/model"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/users"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 	"github.com/segmentio/kafka-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -27,7 +27,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 		},
 	})
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	for {
@@ -35,7 +35,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 		msg, err := output.Reader.FetchMessage(ctx, &data)
 		if err != nil {
 			if !errors.Is(err, ekafka.ErrJsonUnmarshal) {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 			continue
 		}
@@ -73,7 +73,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 					},
 				})
 				if err != nil {
-					span.RecordError(tracer.Error(err))
+					span.RecordError(collection.Err(err))
 					span.SetStatus(codes.Error, err.Error())
 					span.SetAttributes(semconv.ErrorTypeKey.String("failed create user"))
 					return err
@@ -81,7 +81,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 
 				err = output.Reader.CommitMessages(ctx, msg)
 				if err != nil {
-					span.RecordError(tracer.Error(err))
+					span.RecordError(collection.Err(err))
 					span.SetStatus(codes.Error, err.Error())
 					span.SetAttributes(semconv.ErrorTypeKey.String("failed commit message"))
 					return err
@@ -93,12 +93,13 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 		default:
 			err = output.Reader.CommitMessages(ctx, msg)
 			if err != nil {
-				span.RecordError(tracer.Error(err))
+				span.RecordError(collection.Err(err))
 				span.SetStatus(codes.Error, err.Error())
 				span.SetAttributes(semconv.ErrorTypeKey.String("failed commit message"))
 				return err
 			}
-			tracer.RecordErrorOtel(span, errors.New("unsupported debezium operation type"))
+			span.SetStatus(codes.Error, "unsupported debezium operation type")
+			span.SetAttributes(semconv.ErrorTypeKey.String("unsupported debezium operation type"))
 		}
 		span.End()
 	}

@@ -3,10 +3,10 @@ package auth
 import (
 	"context"
 	"errors"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/token"
 	jwt_util "github.com/mini-e-commerce-microservice/auth-service/internal/util/jwt"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 )
 
 // Logout
@@ -16,7 +16,7 @@ func (s *service) Logout(ctx context.Context, input LogoutInput) (err error) {
 	err = refreshTokenClaims.ClaimsHS256(input.RefreshToken, s.jwtConf.RefreshToken.Key)
 	if err != nil {
 		err = errors.Join(err, ErrInvalidToken)
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	err = s.tokenRepository.DeleteToken(ctx, token.DeleteTokenInput{
@@ -24,7 +24,7 @@ func (s *service) Logout(ctx context.Context, input LogoutInput) (err error) {
 		TokenUID:  refreshTokenClaims.Uid,
 	})
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 	return
 }

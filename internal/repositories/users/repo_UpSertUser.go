@@ -2,7 +2,7 @@ package users
 
 import (
 	"context"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 )
 
 func (r *repository) UpSertUser(ctx context.Context, input UpSertUserInput) (output UpSertUserOutput, err error) {
@@ -37,7 +37,7 @@ func (r *repository) UpSertUser(ctx context.Context, input UpSertUserInput) (out
 
 	_, err = rdbms.ExecSq(ctx, query)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	return

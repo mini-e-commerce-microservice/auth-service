@@ -4,6 +4,6 @@ import "context"
 
 type Repository interface {
 	InsertToken(ctx context.Context, input InsertTokenInput) (err error)
-	CheckToken(ctx context.Context, input CheckTokenInput) (exists bool, err error)
+	GetToken(ctx context.Context, input GetTokenInput) (output GetTokenOutput, err error)
 	DeleteToken(ctx context.Context, input DeleteTokenInput) (err error)
 }

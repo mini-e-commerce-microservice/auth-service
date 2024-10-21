@@ -8,6 +8,8 @@ github.com/SyaibanAhmadRamadhan/event-bus v1.241006.2023 h1:I6rwpl8BmT2X4FTH7T3c
 github.com/SyaibanAhmadRamadhan/event-bus v1.241006.2023/go.mod h1:ywhrb1NWwVEyCnd2gvP7QLEc5tOs3aFdCmyu//91zAs=
 github.com/SyaibanAhmadRamadhan/event-bus/kafka v1.241007.1634 h1:F0Ejn611pFyJDyP+DlMsN6PnaxKlu3syJoXEOYRkYp8=
 github.com/SyaibanAhmadRamadhan/event-bus/kafka v1.241007.1634/go.mod h1:8nP+2ebqT8UNu6q1kyykWj1gBVGWfilJR6sexn4iV9Y=
+github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240 h1:j1PA6IGSwflZEZ1AmBrapF2m+j6KcUQVy20+7/duuiY=
+github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240/go.mod h1:/TjBnG/JdgUGV+VRE3Gn+kl8r3LoOvwctwtZz13tJHM=
 github.com/SyaibanAhmadRamadhan/http-wrapper v1.241004.1117 h1:80gHZmUtcGJWxY+0v1cO2r1KHbK7yj7ZcAbVtWtRlcI=
 github.com/SyaibanAhmadRamadhan/http-wrapper v1.241004.1117/go.mod h1:SvaG7nLrX0nRPNc7YTNHbBjREBFhLeBRWDedaIZIbbA=
 github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2041 h1:8PzR+4p+aNxLs9mudKmK5X9iLt8RrMmv4vekyyY11H4=

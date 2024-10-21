@@ -3,8 +3,8 @@ package users
 import (
 	"context"
 	"github.com/Masterminds/squirrel"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 )
 
 func (r *repository) CheckExistingUser(ctx context.Context, input CheckExistingUserInput) (exists bool, err error) {
@@ -25,7 +25,7 @@ func (r *repository) CheckExistingUser(ctx context.Context, input CheckExistingU
 
 	err = r.rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeDefault, &exists)
 	if err != nil {
-		return exists, tracer.Error(err)
+		return exists, collection.Err(err)
 	}
 	return
 }

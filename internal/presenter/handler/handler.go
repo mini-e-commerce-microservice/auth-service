@@ -31,7 +31,7 @@ func (h *handler) route() {
 		h.V1LoginPost, whttp.WithLogRequestBody(false), whttp.WithLogResponseBody(false),
 	))
 
-	h.r.Post("/v1/generate-access-token", h.httpOtel.Trace(
+	h.r.Get("/v1/generate-access-token", h.httpOtel.Trace(
 		h.V1GenerateAccessTokenPost, whttp.WithLogRequestBody(false),
 	))
 

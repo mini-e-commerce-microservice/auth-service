@@ -43,6 +43,12 @@ paths:
     get:
       operationId: V1GenerateAccessTokenPost
       description: make sure in you can have refresh token in cookies
+      parameters:
+        - name: update_user_data
+          in: query
+          schema:
+            type: boolean
+          required: true
       responses:
         200:
           description: OK

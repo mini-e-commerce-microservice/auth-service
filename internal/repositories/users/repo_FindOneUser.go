@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/Masterminds/squirrel"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 )
 
 func (r *repository) FindOneUser(ctx context.Context, input FindOneUserInput) (output FindOneUserOutput, err error) {
@@ -25,7 +25,7 @@ func (r *repository) FindOneUser(ctx context.Context, input FindOneUserInput) (o
 			err = repositories.ErrRecordNotFound
 		}
 
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	return

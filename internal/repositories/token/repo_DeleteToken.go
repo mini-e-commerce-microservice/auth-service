@@ -3,8 +3,8 @@ package token
 import (
 	"context"
 	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 )
 
 func (r *repository) DeleteToken(ctx context.Context, input DeleteTokenInput) (err error) {
@@ -14,7 +14,7 @@ func (r *repository) DeleteToken(ctx context.Context, input DeleteTokenInput) (e
 
 	resp := r.client.Do(ctx, cmd)
 	if err = resp.Error(); err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 	return
 }

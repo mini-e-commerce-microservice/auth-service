@@ -2,9 +2,9 @@ package jwt_util
 
 import (
 	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/mini-e-commerce-microservice/auth-service/generated/proto/jwt_claims_proto"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/util/tracer"
 	"time"
 )
 
@@ -27,7 +27,7 @@ func (a *AuthAccessTokenClaims) GenerateHS256(key string, expiredAt int64) (toke
 
 	tokenStr, err = tokenParse.SignedString([]byte(key))
 	if err != nil {
-		return tokenStr, tracer.Error(err)
+		return tokenStr, collection.Err(err)
 	}
 	return
 }
@@ -40,11 +40,11 @@ func (a *AuthAccessTokenClaims) ClaimsHS256(tokenStr string, key string) (err er
 		return []byte(key), nil
 	})
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	if !tokenParse.Valid {
-		return tracer.Error(ErrInvalidParseToken)
+		return collection.Err(ErrInvalidParseToken)
 	}
 
 	return
