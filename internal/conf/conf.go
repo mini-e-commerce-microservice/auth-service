@@ -120,8 +120,8 @@ func LoadRedisConf() *secret_proto.Redis {
 	return redisConf
 }
 
-func LoadAppConf() *AppConfig {
-	appConf := &AppConfig{}
+func LoadAppConf() *secret_proto.AuthService {
+	appConf := &secret_proto.AuthService{}
 	if flag.Lookup("test.v") != nil {
 		err := faker.FakeData(&appConf)
 		if err != nil {

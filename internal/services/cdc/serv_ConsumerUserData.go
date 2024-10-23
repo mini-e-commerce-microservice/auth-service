@@ -22,7 +22,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 	output, err := c.kafkaBroker.Subscribe(ctx, ekafka.SubInput{
 		Config: kafka.ReaderConfig{
 			Brokers: []string{c.kafkaConf.Host},
-			GroupID: "user-service-consumer-user-data-group1",
+			GroupID: c.appConf.ConsumerUserDataGroup_1,
 			Topic:   c.kafkaConf.Topic.CdcUserTable,
 		},
 	})

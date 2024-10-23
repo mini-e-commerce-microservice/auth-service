@@ -27,9 +27,9 @@ var restApi = &cobra.Command{
 		redisConf := conf.LoadRedisConf()
 		jwtConf := conf.LoadJwtConf()
 
-		redisClient, redisClose := infra.NewRedisWithOtel(redisConf, appConf.ClientRedisName)
+		redisClient, redisClose := infra.NewRedisWithOtel(redisConf, appConf.RedisClientName)
 		otelClose := infra.NewOtel(otelConf, appConf.TracerName)
-		postgreClient, postgreClose := infra.NewPostgresql(appConf.DatabaseDSN)
+		postgreClient, postgreClose := infra.NewPostgresql(appConf.DatabaseDsn)
 		rdbms := wsqlx.NewRdbms(postgreClient, wsqlx.WithAttributes(
 			semconv.DBSystemPostgreSQL,
 		))
@@ -41,7 +41,7 @@ var restApi = &cobra.Command{
 
 		server := presenter.New(&presenter.Presenter{
 			AuthService: authService,
-			Port:        appConf.AppPort,
+			Port:        int(appConf.AppPort),
 		})
 
 		ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
