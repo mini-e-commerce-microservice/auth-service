@@ -29,7 +29,7 @@ var consumerUserService = &cobra.Command{
 
 		userRepository := users.NewRepository(rdbms)
 
-		cdcService := cdc.New(kafkaBroker, kafkaConf, appConf, userRepository, rdbms)
+		cdcService := cdc.New(kafkaBroker, kafkaConf, userRepository, rdbms)
 
 		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 		defer stop()

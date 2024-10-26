@@ -13,18 +13,16 @@ type cdc struct {
 	kafkaBroker    ekafka.KafkaPubSub
 	userRepository users.Repository
 	kafkaConf      *secret_proto.Kafka
-	appConf        *secret_proto.AuthService
 	propagators    propagation.TextMapPropagator
 	dbTransaction  wsqlx.Tx
 }
 
-func New(kafkaBroker ekafka.KafkaPubSub, kafkaConf *secret_proto.Kafka, appConf *secret_proto.AuthService, userRepository users.Repository, dbTransaction wsqlx.Tx) *cdc {
+func New(kafkaBroker ekafka.KafkaPubSub, kafkaConf *secret_proto.Kafka, userRepository users.Repository, dbTransaction wsqlx.Tx) *cdc {
 	return &cdc{
 		userRepository: userRepository,
 		propagators:    otel.GetTextMapPropagator(),
 		kafkaBroker:    kafkaBroker,
 		dbTransaction:  dbTransaction,
 		kafkaConf:      kafkaConf,
-		appConf:        appConf,
 	}
 }

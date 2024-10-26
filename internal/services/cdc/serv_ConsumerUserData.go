@@ -22,8 +22,8 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 	output, err := c.kafkaBroker.Subscribe(ctx, ekafka.SubInput{
 		Config: kafka.ReaderConfig{
 			Brokers: []string{c.kafkaConf.Host},
-			GroupID: c.appConf.ConsumerUserDataGroup_1,
-			Topic:   c.kafkaConf.Topic.CdcUserTable,
+			GroupID: c.kafkaConf.Topic.UsersvcPublicUsers.ConsumerGroup.Authsvc,
+			Topic:   c.kafkaConf.Topic.UsersvcPublicUsers.Name,
 		},
 	})
 	if err != nil {
@@ -57,7 +57,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 			_ = c.dbTransaction.DoTxContext(ctxConsumer, &sql.TxOptions{
 				Isolation: sql.LevelReadCommitted,
 				ReadOnly:  false,
-			}, func(ctx context.Context, tx wsqlx.Rdbms) error {
+			}, func(ctx context.Context, tx wsqlx.Rdbms) (err error) {
 				_, err = c.userRepository.UpSertUser(ctx, users.UpSertUserInput{
 					Tx: tx,
 					Payload: model.User{
@@ -76,7 +76,7 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 					span.RecordError(collection.Err(err))
 					span.SetStatus(codes.Error, err.Error())
 					span.SetAttributes(semconv.ErrorTypeKey.String("failed create user"))
-					return err
+					return collection.Err(err)
 				}
 
 				err = output.Reader.CommitMessages(ctx, msg)
@@ -84,18 +84,23 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 					span.RecordError(collection.Err(err))
 					span.SetStatus(codes.Error, err.Error())
 					span.SetAttributes(semconv.ErrorTypeKey.String("failed commit message"))
-					return err
+					return collection.Err(err)
 				}
 
 				span.SetStatus(codes.Ok, "cdc successfully")
-				return nil
+				return
 			})
+			if err != nil {
+				span.End()
+				return collection.Err(err)
+			}
 		default:
 			err = output.Reader.CommitMessages(ctx, msg)
 			if err != nil {
 				span.RecordError(collection.Err(err))
 				span.SetStatus(codes.Error, err.Error())
 				span.SetAttributes(semconv.ErrorTypeKey.String("failed commit message"))
+				span.End()
 				return err
 			}
 			span.SetStatus(codes.Error, "unsupported debezium operation type")
