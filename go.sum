@@ -12,8 +12,14 @@ github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240 h1:j1PA6IGSwflZEZ1A
 github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240/go.mod h1:/TjBnG/JdgUGV+VRE3Gn+kl8r3LoOvwctwtZz13tJHM=
 github.com/SyaibanAhmadRamadhan/http-wrapper v1.241004.1117 h1:80gHZmUtcGJWxY+0v1cO2r1KHbK7yj7ZcAbVtWtRlcI=
 github.com/SyaibanAhmadRamadhan/http-wrapper v1.241004.1117/go.mod h1:SvaG7nLrX0nRPNc7YTNHbBjREBFhLeBRWDedaIZIbbA=
-github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2041 h1:8PzR+4p+aNxLs9mudKmK5X9iLt8RrMmv4vekyyY11H4=
-github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2041/go.mod h1:2fRAocZF2AuUuE3i5KrjkxS6tJ95uuLyblCO2wa4lU4=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101172324-9094564b69ef h1:uJaNtQmOw6KJ6oUTIy3+WfAYqZciETSxyfK1SOyvq1Q=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101172324-9094564b69ef/go.mod h1:2fRAocZF2AuUuE3i5KrjkxS6tJ95uuLyblCO2wa4lU4=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101172849-9a2271365281 h1:04srbdcAx/KRWItpmdVfruXK4wf5TvITR9bDK+4xEyw=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101172849-9a2271365281/go.mod h1:2fRAocZF2AuUuE3i5KrjkxS6tJ95uuLyblCO2wa4lU4=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101174710-16418e8b5d09 h1:Gk2OxXKkGJZZzn/MQh5UMLlteMe8SDSPulI1gvsZ0zo=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101174710-16418e8b5d09/go.mod h1:2fRAocZF2AuUuE3i5KrjkxS6tJ95uuLyblCO2wa4lU4=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101175046-031d7f867c21 h1:pAZWgQvsKBK8qL3JFJjAC3OVHCjg06M0g5Sm7M2SJvs=
+github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101175046-031d7f867c21/go.mod h1:2fRAocZF2AuUuE3i5KrjkxS6tJ95uuLyblCO2wa4lU4=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=
 github.com/cenkalti/backoff/v4 v4.3.0/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=

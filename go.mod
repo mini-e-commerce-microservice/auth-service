@@ -7,8 +7,9 @@ require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/SyaibanAhmadRamadhan/event-bus v1.241006.2023
 	github.com/SyaibanAhmadRamadhan/event-bus/kafka v1.241007.1634
+	github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240
 	github.com/SyaibanAhmadRamadhan/http-wrapper v1.241004.1117
-	github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2041
+	github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241008.2042-0.20241101175046-031d7f867c21
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/go-faker/faker/v4 v4.5.0
@@ -37,7 +38,6 @@ require (
 )
 
 require (
-	github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect

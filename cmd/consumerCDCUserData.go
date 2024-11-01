@@ -14,9 +14,9 @@ import (
 	"syscall"
 )
 
-var consumerUserService = &cobra.Command{
-	Use:   "consumerUserService",
-	Short: "consumerUserService",
+var consumerCDCUserData = &cobra.Command{
+	Use:   "consumerCDCUserData",
+	Short: "consumerCDCUserData",
 	Run: func(cmd *cobra.Command, args []string) {
 		kafkaConf := conf.LoadKafkaConf()
 		appConf := conf.LoadAppConf()
@@ -37,7 +37,8 @@ var consumerUserService = &cobra.Command{
 		go func() {
 			err := cdcService.ConsumerUserData(ctx)
 			if err != nil {
-				ctx.Done()
+				log.Err(err)
+				stop()
 			}
 		}()
 

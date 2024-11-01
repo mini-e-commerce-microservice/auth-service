@@ -6,7 +6,7 @@ import (
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/conf"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/infra"
-	"github.com/mini-e-commerce-microservice/auth-service/internal/presenter"
+	"github.com/mini-e-commerce-microservice/auth-service/internal/presentations"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/token"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/repositories/users"
 	"github.com/mini-e-commerce-microservice/auth-service/internal/services/auth"
@@ -19,7 +19,7 @@ import (
 )
 
 var restApi = &cobra.Command{
-	Use:   "rest-api",
+	Use:   "restApi",
 	Short: "REST API",
 	Run: func(cmd *cobra.Command, args []string) {
 		appConf := conf.LoadAppConf()
@@ -39,17 +39,18 @@ var restApi = &cobra.Command{
 
 		authService := auth.NewService(tokenRepository, usersRepository, jwtConf)
 
-		server := presenter.New(&presenter.Presenter{
+		server := presentations.New(&presentations.Presenter{
 			AuthService: authService,
 			Port:        int(appConf.AppPort),
 		})
 
-		ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-		defer cancel()
+		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+		defer stop()
 
 		go func() {
 			if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-				ctx.Done()
+				log.Err(err)
+				stop()
 			}
 		}()
 
