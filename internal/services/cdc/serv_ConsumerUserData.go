@@ -48,7 +48,6 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 				attribute.String("cdc.debezium.payload.op", string(data.Payload.Op)),
 				attribute.Int64("cdc.debezium.payload.data.id", data.Payload.ID),
 				attribute.String("cdc.debezium.payload.data.email", data.Payload.Email),
-				attribute.Int64("cdc.debezium.payload.data.register_as", int64(data.Payload.RegisterAs)),
 				attribute.Bool("cdc.debezium.payload.data.is_email_verified", data.Payload.IsEmailVerified),
 			))
 
@@ -66,7 +65,6 @@ func (c *cdc) ConsumerUserData(ctx context.Context) (err error) {
 						Password:        data.Payload.Password,
 						CreatedAt:       data.Payload.CreatedAt,
 						IsEmailVerified: data.Payload.IsEmailVerified,
-						RegisterAs:      data.Payload.RegisterAs,
 						UpdatedAt:       data.Payload.UpdatedAt,
 						DeletedAt:       data.Payload.DeletedAt,
 						TraceParent:     data.Payload.TraceParent,

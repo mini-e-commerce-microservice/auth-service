@@ -39,7 +39,6 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 		JwtAuthAccessTokenClaims: &jwt_claims_proto.JwtAuthAccessTokenClaims{
 			UserId:          userOutput.Data.ID,
 			Email:           userOutput.Data.Email,
-			RegisterAs:      int64(userOutput.Data.RegisterAs),
 			IsEmailVerified: userOutput.Data.IsEmailVerified,
 		},
 	}
@@ -71,7 +70,6 @@ func (s *service) Login(ctx context.Context, input LoginInput) (output LoginOutp
 		Value: model.TokenCache{
 			Email:           userOutput.Data.Email,
 			IsEmailVerified: userOutput.Data.IsEmailVerified,
-			RegisterAs:      userOutput.Data.RegisterAs,
 		},
 	})
 	if err != nil {

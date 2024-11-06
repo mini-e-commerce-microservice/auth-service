@@ -44,7 +44,6 @@ func (s *service) GenerateAccessToken(ctx context.Context, input GenerateAccessT
 			Value: model.TokenCache{
 				Email:           userOutput.Data.Email,
 				IsEmailVerified: userOutput.Data.IsEmailVerified,
-				RegisterAs:      userOutput.Data.RegisterAs,
 			},
 		})
 		if err != nil {
@@ -68,7 +67,6 @@ func (s *service) GenerateAccessToken(ctx context.Context, input GenerateAccessT
 		JwtAuthAccessTokenClaims: &jwt_claims_proto.JwtAuthAccessTokenClaims{
 			UserId:          refreshTokenClaims.UserId,
 			Email:           refreshTokenData.Data.Email,
-			RegisterAs:      int64(refreshTokenData.Data.RegisterAs),
 			IsEmailVerified: refreshTokenData.Data.IsEmailVerified,
 		},
 	}

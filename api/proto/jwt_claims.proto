@@ -13,8 +13,7 @@ message JwtOtpActivationEmailClaims {
 message JwtAuthAccessTokenClaims {
   int64 user_id = 1;
   string email = 2;
-  int64 register_as = 3;
-  bool is_email_verified = 4;
+  bool is_email_verified = 3;
 }
 
 message JwtAuthRefreshTokenClaims {
